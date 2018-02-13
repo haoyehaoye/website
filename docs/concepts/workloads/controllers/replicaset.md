@@ -14,6 +14,11 @@ between a _ReplicaSet_ and a
 the selector support. ReplicaSet supports the new set-based selector requirements
 as described in the [labels user guide](/docs/concepts/overview/working-with-objects/labels/#label-selectors)
 whereas a Replication Controller only supports equality-based selector requirements.
+```
+Summary:
+set-basedの例：partition in (customerA, customerB)
+equality-basedの例：environment!=qa
+```
 
 {% endcapture %}
 
@@ -36,6 +41,12 @@ creation, deletion and updates. When you use Deployments you don't have to worry
 about managing the ReplicaSets that they create. Deployments own and manage
 their ReplicaSets.
 
+```
+Summary:
+- rolling update機能をつかいたいとき、Deploymentsを利用します。
+- ReplicaSetsが独自で使えますけど、ReplicaSetsを管理できるのDeploymentsと一緒に使うことがおすすめです。
+```
+
 ## When to use a ReplicaSet
 
 A ReplicaSet ensures that a specified number of pod replicas are running at any given
@@ -46,6 +57,12 @@ you require custom update orchestration or don't require updates at all.
 
 This actually means that you may never need to manipulate ReplicaSet objects:
 use a Deployment instead, and define your application in the spec section.
+
+```
+Summary:
+- ほぼHowの部分と同じことを言っている
+- DeploymentはReplicaSetsを管理するのhigher-level concept
+```
 
 ## Example
 
@@ -102,8 +119,8 @@ A ReplicaSet also needs a [`.spec` section](https://git.k8s.io/community/contrib
 
 ### Pod Template
 
-The `.spec.template` is the only required field of the `.spec`. The `.spec.template` is a 
-[pod template](/docs/concepts/workloads/pods/pod-overview/#pod-templates). It has exactly the same schema as a 
+The `.spec.template` is the only required field of the `.spec`. The `.spec.template` is a
+[pod template](/docs/concepts/workloads/pods/pod-overview/#pod-templates). It has exactly the same schema as a
 [pod](/docs/concepts/workloads/pods/pod/), except that it is nested and does not have an `apiVersion` or `kind`.
 
 In addition to required fields of a pod, a pod template in a ReplicaSet must specify appropriate
@@ -115,6 +132,11 @@ For [restart policy](/docs/concepts/workloads/pods/pod-lifecycle/), the only all
 
 For local container restarts, ReplicaSet delegates to an agent on the node,
 for example the [Kubelet](/docs/admin/kubelet/) or Docker.
+
+```
+Summary:
+- restart policyの値はAlwaysだけになります。
+```
 
 ### Pod Selector
 
@@ -128,18 +150,28 @@ be rejected by the API.
 
 In Kubernetes 1.9 the API version `apps/v1` on the ReplicaSet kind is the current version and is enabled by default. The API version `apps/v1beta2` is deprecated.
 
-Also you should not normally create any pods whose labels match this selector, either directly, with 
-another ReplicaSet, or with another controller such as a Deployment. If you do so, the ReplicaSet thinks that it 
+Also you should not normally create any pods whose labels match this selector, either directly, with
+another ReplicaSet, or with another controller such as a Deployment. If you do so, the ReplicaSet thinks that it
 created the other pods. Kubernetes does not stop you from doing this.
 
 If you do end up with multiple controllers that have overlapping selectors, you
 will have to manage the deletion yourself.
+
+```
+Summary:
+- 複数controllersに同じselectorを指定すると混乱の状況になってしまいます。（Kubernetes自体はこんなことを禁止してないです）
+```
 
 ### Labels on a ReplicaSet
 
 The ReplicaSet can itself have labels (`.metadata.labels`).  Typically, you
 would set these the same as the `.spec.template.metadata.labels`.  However, they are allowed to be
 different, and the `.metadata.labels` do not affect the behavior of the ReplicaSet.
+
+```
+Summary:
+- .metadata.labelsにReplicaSet自身のlabelsを指定できますけど、ReplicaSetの動作に影響ないです。
+```
 
 ### Replicas
 
@@ -161,6 +193,14 @@ be restarted.
 When using the REST API or go client library, you need to do the steps explicitly (scale replicas to
 0, wait for pod deletions, then delete the ReplicaSet).
 
+```
+Summary:
+ReplicaSetを削除するの動作の順番
+１、replicasを０に設定する
+２、Podの削除を待ち
+３、ReplicaSetを削除
+```
+
 ### Deleting just a ReplicaSet
 
 You can delete a ReplicaSet without affecting any of its pods, using [`kubectl delete`](/docs/user-guide/kubectl/{{page.version}}/#delete) with the `--cascade=false` option.
@@ -174,7 +214,7 @@ To update pods to a new spec in a controlled way, use a [rolling update](#rollin
 
 ### Isolating pods from a ReplicaSet
 
-Pods may be removed from a ReplicaSet's target set by changing their labels. This technique may be used to remove pods 
+Pods may be removed from a ReplicaSet's target set by changing their labels. This technique may be used to remove pods
 from service for debugging, data recovery, etc. Pods that are removed in this way will be replaced automatically (
   assuming that the number of replicas is not also changed).
 
@@ -205,6 +245,12 @@ Alternatively, you can use the `kubectl autoscale` command to accomplish the sam
 
 ```shell
 kubectl autoscale rs frontend
+```
+
+```
+Summary:
+kubectl autoscaleの例はこなん感じ
+kubectl autoscale rc foo --min=2 --max=5 --cpu-percent=80
 ```
 
 ## Alternatives to ReplicaSet
