@@ -137,7 +137,7 @@ If specified, the `.spec.template.metadata.labels` must be equal to the `.spec.s
 be rejected by the API.  If `.spec.selector` is unspecified, it will be defaulted to
 `.spec.template.metadata.labels`.
 
-Also you should not normally create any pods whose labels match this selector, either directly, with 
+Also you should not normally create any pods whose labels match this selector, either directly, with
 another ReplicationController, or with another controller such as Job. If you do so, the
 ReplicationController thinks that it created the other pods.  Kubernetes does not stop you
 from doing this.
@@ -218,6 +218,12 @@ Multiple ReplicationControllers can sit behind a single service, so that, for ex
 goes to the old version, and some goes to the new version.
 
 A ReplicationController will never terminate on its own, but it isn't expected to be as long-lived as services. Services may be composed of pods controlled by multiple ReplicationControllers, and it is expected that many ReplicationControllers may be created and destroyed over the lifetime of a service (for instance, to perform an update of pods that run the service). Both services themselves and their clients should remain oblivious to the ReplicationControllers that maintain the pods of the services.
+
+```
+Summary:
+- 一つのサービスは複数のReplicationControllersを設定することができます
+- あるReplicationControllerのlifetimeはservicesより短かくてもいい
+```
 
 ## Writing programs for Replication
 
