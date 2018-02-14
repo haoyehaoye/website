@@ -15,6 +15,11 @@ You describe a _desired state_ in a Deployment object, and the Deployment contro
 **Note:** You should not manage ReplicaSets owned by a Deployment. All the use cases should be covered by manipulating the Deployment object. Consider opening an issue in the main Kubernetes repository if your use case is not covered below.
 {: .note}
 
+```
+Summary:
+- Deploymentが持っているReplicaSetsを直接弄ることができないです
+```
+
 {% endcapture %}
 
 
@@ -52,7 +57,7 @@ In this example:
   [Docker Hub](https://hub.docker.com/) image at version 1.7.9.
 * The Deployment opens port 80 for use by the Pods.
 
-Note: `matchLabels` is a map of {key,value} pairs. A single {key,value} in the matchLabels map 
+Note: `matchLabels` is a map of {key,value} pairs. A single {key,value} in the matchLabels map
 is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In",
 and the values array contains only "value". The requirements are ANDed.
 
@@ -156,6 +161,11 @@ and in any existing Pods that the ReplicaSet might have.
 is changed, for example if the labels or container images of the template are updated. Other updates, such as scaling the Deployment, do not trigger a rollout.
 {: .note}
 
+```
+Summary:
+- Deploymentのrolloutはpod templateが変更があるときだけ走ります。
+```
+
 Suppose that we now want to update the nginx Pods to use the `nginx:1.9.1` image
 instead of the `nginx:1.7.9` image.
 
@@ -193,6 +203,12 @@ number of current replicas that are available.
 
 We can run `kubectl get rs` to see that the Deployment updated the Pods by creating a new ReplicaSet and scaling it
 up to 3 replicas, as well as scaling down the old ReplicaSet to 0 replicas.
+
+```
+Summary:
+- DeploymentはReplicaSetを通してPodsを管理する。
+- rolloutの動作は新しいReplicaSetを作って、古いReplicaSetのreplicas数を０にする。
+```
 
 ```shell
 $ kubectl get rs
@@ -272,6 +288,13 @@ least 2 Pods were available and at most 4 Pods were created at all times. It the
 the new and the old ReplicaSet, with the same rolling update strategy. Finally, we'll have 3 available replicas
 in the new ReplicaSet, and the old ReplicaSet is scaled down to 0.
 
+```
+Summary:
+- spec.strategy.type can be “Recreate” or “RollingUpdate”. “RollingUpdate” is the default value.
+- RollingUpdateStrategyでmax unavailableとmax surgeが設定できます。
+- rolloutの動作はReplicaSetsを連続して、max unavailableとmax surgeを維持しながら、replicasの増減を完成する
+```
+
 ### Rollover (aka multiple updates in-flight)
 
 Each time a new deployment object is observed by the deployment controller, a ReplicaSet is created to bring up
@@ -290,6 +313,11 @@ killing the 3 `nginx:1.7.9` Pods that it had created, and will start creating
 `nginx:1.9.1` Pods. It will not wait for 5 replicas of `nginx:1.7.9` to be created
 before changing course.
 
+```
+Summary:
+- rolloutが途中に新しいDeploymentをupdateするときにもすぐ新しいReplicaSetのscalingを開始して、前のReplicaSetをscaling downを始まる。（ちょっと日本語が変かも）
+```
+
 ### Label selector updates
 
 It is generally discouraged to make label selector updates and it is suggested to plan your selectors up front.
@@ -307,6 +335,11 @@ creating a new ReplicaSet.
 * Selector removals -- that is, removing an existing key from the Deployment selector -- do not require any changes in the
 pod template labels. No existing ReplicaSet is orphaned, and a new ReplicaSet is not created, but note that the
 removed label still exists in any existing Pods and ReplicaSets.
+
+```
+Summary:
+- label selectorの更新は勧めないです！！！
+```
 
 ## Rolling Back a Deployment
 
@@ -396,6 +429,13 @@ Events:
 ```
 
 To fix this, we need to rollback to a previous revision of Deployment that is stable.
+
+```
+Summary:
+- デフォルトでDeploymentのrollout歴史をすべて保存されています、将来は２にする予定です（ In a future version, it will default to switch to 2.）。（手動でlimitが変えます）
+- Deploymentのロールバックはpod templateの部分だけロールバックする
+```
+
 
 ### Checking Rollout History of a Deployment
 
@@ -555,6 +595,12 @@ $ kubectl get rs
 NAME                          DESIRED   CURRENT   READY     AGE
 nginx-deployment-1989198191   7         7         0         7m
 nginx-deployment-618515232    11        11        11        7m
+```
+
+```
+Summary:
+- 比例（ひれい）スケーリングをサポートしています。
+- Deployment controllerは追加のreplicasに対して、既存のアクテブReplicaSetsにいい感じを分散しています。（日本語が怪しいw）
 ```
 
 ## Pausing and Resuming a Deployment
@@ -812,6 +858,13 @@ $ echo $?
 
 All actions that apply to a complete Deployment also apply to a failed Deployment. You can scale it up/down, roll back
 to a previous revision, or even pause it if you need to apply multiple tweaks in the Deployment pod template.
+
+```
+Summary:
+Kubernetes will take no action on a stalled Deployment other than to report a status condition with Reason=ProgressDeadlineExceeded. Higher level orchestrators can take advantage of it and act accordingly, for example, rollback the Deployment to its previous version.
+deploymentが失敗したら、Kubernetesはstatus conditionを報告する以外は何もしないです。
+
+```
 
 ## Clean up Policy
 
