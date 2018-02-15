@@ -39,6 +39,11 @@ provides a set of stateless replicas. Controllers such as
 [Deployment](/docs/concepts/workloads/controllers/deployment/) or
 [ReplicaSet](/docs/concepts/workloads/controllers/replicaset/) may be better suited to your stateless needs.
 
+```
+Summary:
+- StatefulSetsに対して、永続識別子と順序展開が重要です
+```
+
 ## Limitations
 
 * StatefulSet is a beta resource, not available in any Kubernetes release prior to 1.5.
@@ -46,6 +51,12 @@ provides a set of stateless replicas. Controllers such as
 * The storage for a given Pod must either be provisioned by a [PersistentVolume Provisioner](https://github.com/kubernetes/examples/tree/{{page.githubbranch}}/staging/persistent-volume-provisioning/README.md) based on the requested `storage class`, or pre-provisioned by an admin.
 * Deleting and/or scaling a StatefulSet down will *not* delete the volumes associated with the StatefulSet. This is done to ensure data safety, which is generally more valuable than an automatic purge of all related StatefulSet resources.
 * StatefulSets currently require a [Headless Service](/docs/concepts/services-networking/service/#headless-services) to be responsible for the network identity of the Pods. You are responsible for creating this Service.
+```
+Summary:
+- 1.9からGAして、まだ機能が不十分な感じ
+- データ安全の為に、StatefulSetに関連するのvolumesを手動で削除しなければいけない
+- 安定なnetwork identityを担保する為に、現在Headless Serviceが必須です
+```
 
 ## Components
 The example below demonstrates the components of a StatefulSet.
@@ -157,8 +168,8 @@ This must be done manually.
 
 ### Pod Name Label
 
-When the StatefulSet controller creates a Pod, it adds a label, `statefulset.kubernetes.io/pod-name`, 
-that is set to the name of the Pod. This label allows you to attach a Service to a specific Pod in 
+When the StatefulSet controller creates a Pod, it adds a label, `statefulset.kubernetes.io/pod-name`,
+that is set to the name of the Pod. This label allows you to attach a Service to a specific Pod in
 the StatefulSet.
 
 ## Deployment and Scaling Guarantees
@@ -233,6 +244,11 @@ StatefulSet's `.spec.updateStrategy.rollingUpdate.partition` is greater than its
 updates to its `.spec.template` will not be propagated to its Pods.
 In most cases you will not need to use a partition, but they are useful if you want to stage an
 update, roll out a canary, or perform a phased roll out.
+
+```
+Summary:
+- partitionを使うケースが少ないです、 段階でリリースしたい場合、canary releaseがおすすめです。
+```
 
 {% endcapture %}
 {% capture whatsnext %}
