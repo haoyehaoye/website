@@ -14,10 +14,11 @@ between a _ReplicaSet_ and a
 the selector support. ReplicaSet supports the new set-based selector requirements
 as described in the [labels user guide](/docs/concepts/overview/working-with-objects/labels/#label-selectors)
 whereas a Replication Controller only supports equality-based selector requirements.
+
 ```
 Summary:
-set-basedの例：partition in (customerA, customerB)
-equality-basedの例：environment!=qa
+- set-basedの例：partition in (customerA, customerB)
+- equality-basedの例：environment!=qa
 ```
 
 {% endcapture %}
@@ -249,8 +250,8 @@ kubectl autoscale rs frontend
 
 ```
 Summary:
-kubectl autoscaleの例はこなん感じ
-kubectl autoscale rc foo --min=2 --max=5 --cpu-percent=80
+- kubectl autoscaleの例はこなん感じ
+-- kubectl autoscale rc foo --min=2 --max=5 --cpu-percent=80
 ```
 
 ## Alternatives to ReplicaSet
