@@ -4,8 +4,8 @@ title: Garbage Collection
 
 {% capture overview %}
 
-The role of the Kubernetes garbage collector is to delete certain objects
-that once had an owner, but no longer have an owner.
+The role of the Kubernetes garbage collector is to delete <span style="color:red"> certain objects
+that once had an owner, but no longer have an owner. </span>
 
 **Note**: Garbage collection is a beta feature and is enabled by default in
 Kubernetes version 1.4 and later.
@@ -81,9 +81,9 @@ the following things are true:
  * The object's `metadata.finalizers` contains the value "foregroundDeletion".
 
 Once the "deletion in progress" state is set, the garbage
-collector deletes the object's dependents. Once the garbage collector has deleted all
+collector deletes the object's dependents. <span style="color:red">　Once the garbage collector has deleted all
 "blocking" dependents (objects with `ownerReference.blockOwnerDeletion=true`), it delete
-the owner object.
+the owner object.</span>
 
 Note that in the "foregroundDeletion", only dependents with
 `ownerReference.blockOwnerDeletion` block the deletion of the owner object.
@@ -108,8 +108,8 @@ field on your owner object. Possible values include "Orphan",
 
 Prior to Kubernetes 1.9, the default garbage collection policy for many controller resources was `orphan`.
 This included ReplicationController, ReplicaSet, StatefulSet, DaemonSet, and
-Deployment. For kinds in the extensions/v1beta1, apps/v1beta1, and apps/v1beta2 group versions, unless you 
-specify otherwise, dependent objects are orphaned by default. In Kubernetes 1.9, for all kinds in the apps/v1 
+Deployment. For kinds in the extensions/v1beta1, apps/v1beta1, and apps/v1beta2 group versions, unless you
+specify otherwise, dependent objects are orphaned by default. In Kubernetes 1.9, for all kinds in the apps/v1
 group version, dependent objects are deleted by default.
 
 Here's an example that deletes dependents in background:
@@ -149,13 +149,14 @@ Here's an example that orphans the dependents of a ReplicaSet:
 ```shell
 kubectl delete replicaset my-repset --cascade=false
 ```
-
+<span style="color:red">
 ### Additional note on Deployments
 
 When using cascading deletes with Deployments you *must* use `propagationPolicy: Foreground`
 to delete not only the ReplicaSets created, but also their Pods. If this type of _propagationPolicy_
 is not used, only the ReplicaSets will be deleted, and the Pods will be orphaned.
 See [kubeadm/#149](https://github.com/kubernetes/kubeadm/issues/149#issuecomment-284766613) for more information.
+</span>
 
 ## Known issues
 
