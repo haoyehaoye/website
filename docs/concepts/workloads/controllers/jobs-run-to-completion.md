@@ -10,7 +10,7 @@ title: Jobs - Run to Completion
 
 ## What is a Job?
 
-A _job_ creates one or more pods and ensures that a specified number of them successfully terminate.
+A _job_ creates <span style="color:red"> one or more </span> pods and ensures that a specified number of them successfully terminate.
 As pods successfully complete, the _job_ tracks the successful completions.  When a specified number
 of successful completions is reached, the job itself is complete.  Deleting a Job will cleanup the
 pods it created.
@@ -125,7 +125,7 @@ There are three main types of jobs:
   - the job is complete when there is one successful pod for each value in the range 1 to `.spec.completions`.
   - **not implemented yet:** each pod passed a different index in the range 1 to `.spec.completions`.
 1. Parallel Jobs with a *work queue*:
-  - do not specify `.spec.completions`, default to `.spec.parallelism`.
+  - <span style="color:red"> do not specify `.spec.completions`, default to `.spec.parallelism`. </span>
   - the pods must coordinate with themselves or an external service to determine what each should work on.
   - each pod is independently capable of determining whether or not all its peers are done, thus the entire Job is done.
   - when _any_ pod terminates with success, no new pods are created.
@@ -221,14 +221,15 @@ allows you to still view the logs of completed pods to check for errors, warning
 The job object also remains after it is completed so that you can view its status.  It is up to the user to delete
 old jobs after noting their status.  Delete the job with `kubectl` (e.g. `kubectl delete jobs/pi` or `kubectl delete -f ./job.yaml`).  When you delete the job using `kubectl`, all the pods it created are deleted too.
 
-If a Job's pods are failing repeatedly, the Job will keep creating new pods forever, by default.
+<span style="color:red">
+If a Job's pods are failing repeatedly, the Job will keep creating new pods forever, by default. </span>
 Retrying forever can be a useful pattern.  If an external dependency of the Job's
 pods is missing (for example an input file on a networked storage volume is not present), then the
 Job will keep trying Pods, and when you later resolve the external dependency (for example, creating
 the missing file) the Job will then complete without any further action.
 
-However, if you prefer not to retry forever, you can set a deadline on the job.  Do this by setting the
-`spec.activeDeadlineSeconds` field of the job to a number of seconds.  The job will have status with
+<span style="color:red"> However, if you prefer not to retry forever, you can set a deadline on the job.  Do this by setting the
+`spec.activeDeadlineSeconds` field of the job to a number of seconds. </span> The job will have status with
 `reason: DeadlineExceeded`.  No more pods will be created, and existing pods will be deleted.
 
 ```yaml
@@ -326,11 +327,11 @@ in unpredictable ways too.  Kubernetes will not stop you from making a mistake w
 specifying `spec.selector`.
 
 Here is an example of a case when you might want to use this feature.
-
+<span style="color:red">
 Say job `old` is already running.  You want existing pods
 to keep running, but you want the rest of the pods it creates
 to use a different pod template and for the job to have a new name.
-You cannot update the job because these fields are not updatable.
+You cannot update the job because these fields are not updatable. </span>
 Therefore, you delete job `old` but leave its pods
 running, using `kubectl delete jobs/old --cascade=false`.
 Before deleting it, you make a note of what selector it uses:
