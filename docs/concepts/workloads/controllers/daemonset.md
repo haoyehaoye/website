@@ -68,9 +68,9 @@ a [Job](/docs/concepts/jobs/run-to-completion-finite-workloads/).
 
 As of Kubernetes 1.8, you must specify a pod selector that matches the labels of the
 `.spec.template`. The pod selector will no longer be defaulted when left empty. Selector
-defaulting was not compatible with `kubectl apply`. Also, <span style="color:red"> once a DaemonSet is created,
+defaulting was not compatible with `kubectl apply`. <span style="color:red"> Also, once a DaemonSet is created,
 its `spec.selector` can not be mutated. Mutating the pod selector can lead to the
-unintentional orphaning of Pods, and it was found to be confusing to users.</span>
+unintentional orphaning of Pods, and it was found to be confusing to users. </span>
 
 The `spec.selector` is an object consisting of two fields:
 
@@ -78,15 +78,20 @@ The `spec.selector` is an object consisting of two fields:
 * `matchExpressions` - allows to build more sophisticated selectors by specifying key,
   list of values and an operator that relates the key and values.
 
-When the two are specified the result is ANDed.
+<span style="color:red"> When the two are specified the result is ANDed. </span>
 
-**Memo: If the `.spec.selector` is specified, it must match the `.spec.template.metadata.labels`. Config with these not matching will be rejected by the API.**
+If the `.spec.selector` is specified, it must match the `.spec.template.metadata.labels`. Config with these not matching will be rejected by the API.
 
 Also you should not normally create any Pods whose labels match this selector, either directly, via
 another DaemonSet, or via other controller such as ReplicaSet.  Otherwise, the DaemonSet
-controller will think that those Pods were created by it.  Kubernetes will not stop you from doing
-this.  One case where you might want to do this is manually create a Pod with a different value on
+controller will think that those Pods were created by it.  <span style="color:red"> Kubernetes will not stop you from doing
+this. </span> One case where you might want to do this is manually create a Pod with a different value on
 a node for testing.
+
+```
+Summary:
+- matchLabelsとmatchExpressions両方を指定すると、両方の条件を満たすことが必要です（ANDと同じ意味）
+```
 
 ### Running Pods on Only Some Nodes
 
@@ -101,11 +106,12 @@ If you do not specify either, then the DaemonSet controller will create Pods on 
 Normally, the machine that a Pod runs on is selected by the Kubernetes scheduler.  However, Pods
 created by the DaemonSet controller have the machine already selected (`.spec.nodeName` is specified
 when the Pod is created, so it is ignored by the scheduler).  Therefore:
-
+<span style="color:red">
  - The [`unschedulable`](/docs/admin/node/#manual-node-administration) field of a node is not respected
    by the DaemonSet controller.
  - The DaemonSet controller can make Pods even when the scheduler has not been started, which can help cluster
    bootstrap.
+</span>   
 
 Daemon Pods do respect [taints and tolerations](/docs/concepts/configuration/taint-and-toleration),
 but they are created with `NoExecute` tolerations for the following taints with no `tolerationSeconds`:
@@ -149,15 +155,15 @@ Some possible patterns for communicating with Pods in a DaemonSet are:
 If node labels are changed, the DaemonSet will promptly add Pods to newly matching nodes and delete
 Pods from newly not-matching nodes.
 
-You can modify the Pods that a DaemonSet creates.  However, Pods do not allow all
+<span style="color:red"> You can modify the Pods that a DaemonSet creates.  However, Pods do not allow all
 fields to be updated.  Also, the DaemonSet controller will use the original template the next
-time a node (even with the same name) is created.
+time a node (even with the same name) is created. </span>
 
 
 You can delete a DaemonSet.  If you specify `--cascade=false` with `kubectl`, then the Pods
 will be left on the nodes.  You can then create a new DaemonSet with a different template.
 The new DaemonSet with the different template will recognize all the existing Pods as having
-matching labels.  It will not modify or delete them despite a mismatch in the Pod template.
+matching labels. <span style="color:red"> It will not modify or delete them despite a mismatch in the Pod template. </span>
 You will need to force new Pod creation by deleting the Pod or deleting the node.
 
 In Kubernetes version 1.6 and later, you can [perform a rolling update](/docs/tasks/manage-daemon/update-daemon-set/) on a DaemonSet.
