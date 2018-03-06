@@ -65,11 +65,11 @@ evaluated continuously and the results will be POSTed to an `Endpoints` object
 also named "my-service".
 
 Note that a `Service` can map an incoming port to any `targetPort`.  By default
-the `targetPort` will be set to the same value as the `port` field.  Perhaps
+the `targetPort` will be set to the same value as the `port` field. <span style="color:red"> Perhaps
 more interesting is that `targetPort` can be a string, referring to the name of
-a port in the backend `Pods`.  The actual port number assigned to that name can
+a port in the backend `Pods`. The actual port number assigned to that name can
 be different in each backend `Pod`. This offers a lot of flexibility for
-deploying and evolving your `Services`.  For example, you can change the port
+deploying and evolving your `Services`.  </span> For example, you can change the port
 number that pods expose in the next version of your backend software, without
 breaking clients.
 
@@ -124,7 +124,7 @@ Accessing a `Service` without a selector works the same as if it had a selector.
 The traffic will be routed to endpoints defined by the user (`1.2.3.4:9376` in
 this example).
 
-An ExternalName service is a special case of service that does not have
+An <span style="color:red"> ExternalName service </span> is a special case of service that does not have
 selectors. It does not define any ports or endpoints. Rather, it serves as a
 way to return an alias to an external service residing outside the cluster.
 
@@ -148,12 +148,12 @@ its pods, add appropriate selectors or endpoints and change the service `type`.
 
 ## Virtual IPs and service proxies
 
-Every node in a Kubernetes cluster runs a `kube-proxy`.  `kube-proxy` is
+Every node in a Kubernetes cluster runs a `kube-proxy`.  <span style="color:red">  `kube-proxy` is
 responsible for implementing a form of virtual IP for `Services` of type other
-than `ExternalName`.
-In Kubernetes v1.0, `Services` are a "layer 4" (TCP/UDP over IP) construct, the 
+than `ExternalName`. </span>
+In Kubernetes v1.0, `Services` are a "layer 4" (TCP/UDP over IP) construct, the
 proxy was purely in userspace.  In Kubernetes v1.1, the `Ingress` API was added
-(beta) to represent "layer 7"(HTTP) services, iptables proxy was added too, 
+(beta) to represent "layer 7"(HTTP) services, iptables proxy was added too,
 and become the default operating mode since Kubernetes v1.2. In Kubernetes v1.9-alpha,
 ipvs proxy was added.
 
@@ -167,7 +167,7 @@ will be proxied to one of the `Service`'s backend `Pods` (as reported in
 `SessionAffinity` of the `Service`.  Lastly, it installs iptables rules which
 capture traffic to the `Service`'s `clusterIP` (which is virtual) and `Port`
 and redirects that traffic to the proxy port which proxies the backend `Pod`.
-By default, the choice of backend is round robin. 
+By default, the choice of backend is round robin.
 
 ![Services overview diagram for userspace proxy](/images/docs/services-userspace-overview.svg)
 
@@ -213,26 +213,26 @@ options for load balancing algorithm, such as:
 
 **Note:** ipvs mode assumed IPVS kernel modules are installed on the node
 before running kube-proxy. When kube-proxy starts with ipvs proxy mode,
-kube-proxy would validate if IPVS modules are installed on the node, if
-it's not installed kube-proxy will fall back to iptables proxy mode.
+kube-proxy would validate if IPVS modules are installed on the node, <span style="color:red"> if
+it's not installed kube-proxy will fall back to iptables proxy mode. <span>
 
 ![Services overview diagram for ipvs proxy](/images/docs/services-ipvs-overview.svg)
 
-In any of proxy model, any traffic bound for the Service’s IP:Port is 
-proxied to an appropriate backend without the clients knowing anything 
-about Kubernetes or Services or Pods. Client-IP based session affinity 
-can be selected by setting service.spec.sessionAffinity to "ClientIP" 
-(the default is "None"), and you can set the max session sticky time by 
-setting the field service.spec.sessionAffinityConfig.clientIP.timeoutSeconds 
-if you have already set service.spec.sessionAffinity to "ClientIP" 
+In any of proxy model, any traffic bound for the Service’s IP:Port is
+proxied to an appropriate backend without the clients knowing anything
+about Kubernetes or Services or Pods. Client-IP based session affinity
+can be selected by setting service.spec.sessionAffinity to "ClientIP"
+(the default is "None"), and you can set the max session sticky time by
+setting the field service.spec.sessionAffinityConfig.clientIP.timeoutSeconds
+if you have already set service.spec.sessionAffinity to "ClientIP"
 (the default is “10800”).
 
 ## Multi-Port Services
 
 Many `Services` need to expose more than one port.  For this case, Kubernetes
-supports multiple port definitions on a `Service` object.  When using multiple
+supports multiple port definitions on a `Service` object. <span style="color:red"> When using multiple
 ports you must give all of your ports names, so that endpoints can be
-disambiguated.  For example:
+disambiguated.  <span> For example:
 
 ```yaml
 kind: Service
@@ -291,7 +291,8 @@ for each active `Service`.  It supports both [Docker links
 compatible](https://docs.docker.com/userguide/dockerlinks/) variables (see
 [makeLinkVariables](http://releases.k8s.io/{{page.githubbranch}}/pkg/kubelet/envvars/envvars.go#L49))
 and simpler `{SVCNAME}_SERVICE_HOST` and `{SVCNAME}_SERVICE_PORT` variables,
-where the Service name is upper-cased and dashes are converted to underscores.
+<span style="color:red">
+where the Service name is upper-cased and dashes are converted to underscores. </span>
 
 For example, the Service `"redis-master"` which exposes TCP port 6379 and has been
 allocated cluster IP address 10.0.0.11 produces the following environment
@@ -345,10 +346,10 @@ allowing them freedom to do discovery their own way.  Applications can still use
 a self-registration pattern and adapters for other discovery systems could easily
 be built upon this API.
 
-For such `Services`, a cluster IP is not allocated, kube-proxy does not handle
+<span style="color:red"> For such `Services`, a cluster IP is not allocated, kube-proxy does not handle
 these services, and there is no load balancing or proxying done by the platform
 for them. How DNS is automatically configured depends on whether the service has
-selectors defined.
+selectors defined. </span>
 
 ### With selectors
 
@@ -714,9 +715,10 @@ of their own.  In this situation, we are looking at network ports - users
 should not have to choose a port number if that choice might collide with
 another user.  That is an isolation failure.
 
+<span style="color:red">
 In order to allow users to choose a port number for their `Services`, we must
 ensure that no two `Services` can collide.  We do that by allocating each
-`Service` its own IP address.
+`Service` its own IP address. </span>
 
 To ensure each service receives a unique IP, an internal allocator atomically
 updates a global allocation map in etcd prior to creating each service. The map object
@@ -729,10 +731,10 @@ that were allocated but which no service currently uses.
 
 ### IPs and VIPs
 
-Unlike `Pod` IP addresses, which actually route to a fixed destination,
+<span style="color:red"> Unlike `Pod` IP addresses, which actually route to a fixed destination,
 `Service` IPs are not actually answered by a single host.  Instead, we use
 `iptables` (packet processing logic in Linux) to define virtual IP addresses
-which are transparently redirected as needed.  When clients connect to the
+which are transparently redirected as needed. </span> When clients connect to the
 VIP, their traffic is automatically transported to an appropriate endpoint.
 The environment variables and DNS for `Services` are actually populated in
 terms of the `Service`'s VIP and port.
@@ -746,9 +748,9 @@ As an example, consider the image processing application described above.
 When the backend `Service` is created, the Kubernetes master assigns a virtual
 IP address, for example 10.0.0.1.  Assuming the `Service` port is 1234, the
 `Service` is observed by all of the `kube-proxy` instances in the cluster.
-When a proxy sees a new `Service`, it opens a new random port, establishes an
+<span style="color:red"> When a proxy sees a new `Service`, it opens a new random port, establishes an
 iptables redirect from the VIP to this new port, and starts accepting
-connections on it.
+connections on it. </span>
 
 When a client connects to the VIP the iptables rule kicks in, and redirects
 the packets to the `Service proxy`'s own port.  The `Service proxy` chooses a
@@ -764,9 +766,9 @@ Again, consider the image processing application described above.
 When the backend `Service` is created, the Kubernetes master assigns a virtual
 IP address, for example 10.0.0.1.  Assuming the `Service` port is 1234, the
 `Service` is observed by all of the `kube-proxy` instances in the cluster.
-When a proxy sees a new `Service`, it installs a series of iptables rules which
+<span style="color:red"> When a proxy sees a new `Service`, it installs a series of iptables rules which
 redirect from the VIP to per-`Service` rules.  The per-`Service` rules link to
-per-`Endpoint` rules which redirect (Destination NAT) to the backends.
+per-`Endpoint` rules which redirect (Destination NAT) to the backends. </span>
 
 When a client connects to the VIP the iptables rule kicks in.  A backend is
 chosen (either based on session affinity or randomly) and packets are
