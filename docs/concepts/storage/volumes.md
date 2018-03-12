@@ -10,11 +10,11 @@ title: Volumes
 {% capture overview %}
 
 On-disk files in a container are ephemeral, which presents some problems for
-non-trivial applications when running in containers.  First, when a container
+non-trivial applications when running in containers.  <span style="color:red"> First, when a container
 crashes, kubelet will restart it, but the files will be lost - the
 container starts with a clean state.  Second, when running containers together
 in a `Pod` it is often necessary to share files between those containers.  The
-Kubernetes `Volume` abstraction solves both of these problems.
+Kubernetes `Volume` abstraction solves both of these problems. </span>
 
 Familiarity with [pods](/docs/user-guide/pods) is suggested.
 
@@ -35,9 +35,9 @@ drivers, but the functionality is very limited for now (e.g. as of Docker 1.7
 only one volume driver is allowed per container and there is no way to pass
 parameters to volumes).
 
-A Kubernetes volume, on the other hand, has an explicit lifetime - the same as
+A Kubernetes volume, <span style="color:red"> on the other hand, has an explicit lifetime </span> - the same as
 the pod that encloses it.  Consequently, a volume outlives any containers that run
-within the Pod, and data is preserved across Container restarts. Of course, when a
+within the Pod, and data is preserved across Container restarts. </span> Of course, when a
 Pod ceases to exist, the volume will cease to exist, too.  Perhaps more
 importantly than this, Kubernetes supports many types of volumes, and a Pod can
 use any number of them simultaneously.
@@ -57,9 +57,9 @@ A process in a container sees a filesystem view composed from their Docker
 image and volumes.  The [Docker
 image](https://docs.docker.com/userguide/dockerimages/) is at the root of the
 filesystem hierarchy, and any volumes are mounted at the specified paths within
-the image.  Volumes can not mount onto other volumes or have hard links to
+the image.  <span style="color:red"> Volumes can not mount onto other volumes or have hard links to
 other volumes.  Each container in the Pod must independently specify where to
-mount each volume.
+mount each volume. <span>
 
 ## Types of Volumes
 
@@ -478,7 +478,7 @@ enabled.
 A `local` volume represents a mounted local storage device such as a disk,
 partition or directory.
 
-Local volumes can only be used as a statically created PersistentVolume.
+<span style="color:red"> Local volumes can only be used as a statically created PersistentVolume. </span>
 
 Compared to HostPath volumes, local volumes can be used in a durable manner
 without manually scheduling pods to nodes, as the system is aware of the volume's
@@ -775,7 +775,7 @@ A `storageos` volume allows an existing [StorageOS](https://www.storageos.com)
 volume to be mounted into your pod.
 
 StorageOS runs as a container within your Kubernetes environment, making local
-or attached storage accessible from any node within the Kubernetes cluster. 
+or attached storage accessible from any node within the Kubernetes cluster.
 Data can be replicated to protect against node failure. Thin provisioning and
 compression can improve utilization and reduce cost.
 
@@ -901,7 +901,7 @@ spec:
       image: mysql
       env:
       - name: MYSQL_ROOT_PASSWORD
-        value: "rootpasswd" 
+        value: "rootpasswd"
       volumeMounts:
       - mountPath: /var/lib/mysql
         name: site-data
